@@ -4,7 +4,7 @@ import sys
 from colorama import Fore, Style
 
 
-def show_structure(path: str) -> None | Exception:
+def show_structure(path: str, format = '') -> None | Exception:
     """ a function that returns the contents of a directory """
 
     directory = Path(path)
@@ -12,17 +12,19 @@ def show_structure(path: str) -> None | Exception:
     if not directory.is_dir():
         raise FileNotFoundError('file not found')
     # scan dir
-    for item in directory.iterdir():
-        # reset color style
-        print(Style.RESET_ALL)
+    direc = directory.iterdir()
+    direc = sorted(direc)
+    for item in direc:
+
         # if dir
         if item.is_dir():
             # show name of dir and check if dir has files (recursion)
-            print(Fore.YELLOW + item.name)
-            show_structure(item.absolute())
+            print(format + Fore.YELLOW + item.name + Style.RESET_ALL)
+            format += "|-"
+            show_structure(item.absolute(), format)
         else:
             # show name of file
-            print(Fore.BLUE + item.name)
+            print(format + Fore.BLUE + item.name + Style.RESET_ALL)
     return True
 
 
@@ -30,10 +32,22 @@ def show_structure(path: str) -> None | Exception:
 if __name__ == '__main__':
     try:
 
-        "/home/cooper/Documents/WOOLF/tier1/Python Programming/homeworks/goit-pycore-hw-04/task3/test"
-        aruments = sys.argv()
-        show_structure(aruments[0])
+        arguments = sys.argv
+        show_structure(arguments[1])
 
-    except (FileNotFoundError, ValueError) as e:
+    except (FileNotFoundError, ValueError, IndexError) as e:
         print(f'Something went wrong, {e}')
         sys.exit(0)
+
+
+# python main.py ./test
+
+#  file01
+#  file02
+#  file03
+#  folder1
+#  |-folder2
+#  |-|-file21
+#  |-|-file22
+#  |-|-folder3
+#  |-|-|-file31

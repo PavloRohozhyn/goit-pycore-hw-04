@@ -1,84 +1,61 @@
 """ sys modules """
+from utils import print_with_color, print_banner
+from handler import parse_input, add_contact, change_contact, show_all, show_phone
 import sys
-
-
-def parse_input(user_input):
-    """ parse input data """
-
-    cmd, *args = user_input.split()
-    cmd = cmd.strip().lower()
-    return cmd, *args
-
-
-def add_contact(args, contacts) -> str:
-    """ add contact """
-
-    name, phone = args
-    contacts[name] = phone
-    return "Contact added."
-
-
-def change_contact(args, contacts) -> str:
-    """ change contact """
-
-    name, phone = args
-    contacts[name] = phone
-    return "Contact updated."
-
-
-def show_phone(args, contacts) -> dict:
-    """ show phone """
-
-    name = args
-    return [contacts[name]]
-
-
-def show_all(args, contacts):
-    """ shoa all """
-    res = []
-    for name, phone in contacts:
-        res.append({"name": name, "phone": phone})    
-    return res
 
 
 # Main
 def main():
     """ bot commands hendler """
-    print("Welcome to the assistant bot!")
+    contacts = {}
     while True:
-        command = input("Enter a command: ").strip().lower()
+        user_input = input("Enter a command: ")
+        try:
+            command, *args = parse_input(user_input)
+        except ValueError as e:
+            print(f"Invalid command, please run againts ({e})")
+            sys.exit(0)
 
         # close, exit
-        if command in ["close", "exit"]:
-            print("Good bye!")
+        if  command in ["close", "exit"]:
+            print_with_color("Good bye!", 'yellow')
             break
 
         # hello
-        elif command == "hello":
-            print("How can I help you?")
-        
+        elif command in ["hello"]:
+            print_with_color("How can I help you?", 'yellow')
+
         # add
         elif command in ["add"]:
-            add_contact('add', ['test', '00000000000'])
-            print("Contact added.")
-        
+            print_with_color(add_contact(args, contacts), 'yellow')
+
         # change
         elif command in ['change']:
-            change_contact(command, ['name1', '11111111111'])
-            print("Contact updated.")
+            print_with_color(change_contact(args, contacts), 'yellow')
 
         # phone
         elif command in ['phone']:
-            show_phone(command, ['test2'])
+            print_with_color(show_phone(args, contacts), 'yellow')
 
         # all
         elif command in ['all']:
-            show_all(command, [])
+            show_all(contacts)
 
-        
         # something else
         else:
             print("Invalid command.")
 
 if __name__ == "__main__":
+
+    print_banner()
+    print("Welcome to the assistant bot!\n\n")
+    print("List of commands")
+    print_with_color("1. FGBS hello BESR say hello to the assistant")
+    print_with_color("2. FGBS add [contact name] [phone_number] BESR adds contact name and phone number to memory")
+    print_with_color("3. FGBS change [contact_name] [new phone number] BESR edits the contact's phone number")
+    print_with_color("4. FGBS phone [contact_name] BESR displays the contact's phone number")
+    print_with_color("5. FGBS all BESR show phone book contacts")
+    print_with_color("6. FGBS close BESR or FGBS exit BESR exit from the assistant\n\n")
+
+    # main
     main()
